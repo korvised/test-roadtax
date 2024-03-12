@@ -10,8 +10,6 @@ const { NODE_ENV, DB_HOST, DB_PORT, DB_USER, DB_PASS, DB_NAME } =
   process.env
 
 export const AppDataSource = new DataSource({
-
-
   type: "postgres",
   host: DB_HOST,
   port: parseInt(DB_PORT || "5432"),
@@ -22,6 +20,7 @@ export const AppDataSource = new DataSource({
   //logging logs sql command on the terminal
   logging: NODE_ENV === "dev" ? false : false,
   entities: [User, Movie],
-  migrations: [__dirname + "/migration/*.ts"],
-  subscribers: []
+  migrations: [__dirname + "/migrations/*.ts"],
+  subscribers: [],
+  migrationsTableName: "migrations",
 })

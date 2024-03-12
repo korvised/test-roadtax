@@ -1,4 +1,5 @@
 import { AppDataSource } from "./data-source"
+import cors from "cors"
 import express from "express"
 import dotenv from "dotenv"
 import { Request, Response } from "express"
@@ -11,6 +12,7 @@ dotenv.config()
 
 const app = express()
 app.use(express.json())
+app.use(cors())
 app.use(errorHandler)
 const { PORT = 3000 } = process.env
 app.use("/auth", userRouter)
