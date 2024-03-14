@@ -1,0 +1,8 @@
+.idea
+.git
+.env
+node_modules
+.gitignore
+.eslintrc.json
+.prettierrc.json
+README.md

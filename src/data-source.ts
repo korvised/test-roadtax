@@ -1,8 +1,7 @@
-import "reflect-metadata"
+import dotenv from "dotenv"
 import { DataSource } from "typeorm"
-
-import * as dotenv from "dotenv"
-import { Movie, User } from "./entities"
+import { Fee, Payment, Province, User } from "./entities"
+import "reflect-metadata"
 
 dotenv.config()
 
@@ -19,8 +18,8 @@ export const AppDataSource = new DataSource({
   synchronize: NODE_ENV === "dev" ? false : false,
   //logging logs sql command on the terminal
   logging: NODE_ENV === "dev" ? false : false,
-  entities: [User, Movie],
+  entities: [Fee, Payment, Province, User],
   migrations: [__dirname + "/migrations/*.ts"],
   subscribers: [],
-  migrationsTableName: "migrations",
+  migrationsTableName: "migrations"
 })

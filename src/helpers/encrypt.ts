@@ -1,10 +1,10 @@
-import * as jwt from "jsonwebtoken"
-import * as bcrypt from "bcrypt"
-import * as dotenv from "dotenv"
-import { payload } from "../dto"
+import jwt from "jsonwebtoken"
+import bcrypt from "bcrypt"
+import dotenv from "dotenv"
+import { AuthPayload } from "../dto"
 
 dotenv.config()
-const { JWT_SECRET = "" } = process.env
+const { JWT_SECRET = "", JWT_EXP = "1d" } = process.env
 
 export class encrypt {
   static async encryptpass(password: string) {
@@ -15,7 +15,7 @@ export class encrypt {
     return bcrypt.compareSync(password, hashPassword)
   }
 
-  static generateToken(payload: payload) {
-    return jwt.sign(payload, JWT_SECRET, { expiresIn: "1d" })
+  static generateToken(payload: AuthPayload) {
+    return jwt.sign(payload, JWT_SECRET, { expiresIn: JWT_EXP })
   }
 }

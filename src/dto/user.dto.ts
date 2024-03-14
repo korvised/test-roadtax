@@ -1,4 +1,4 @@
-export class payload {
+export class AuthPayload {
   id: string
 }
 

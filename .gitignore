@@ -1,4 +1,7 @@
 .idea
 .env
+.env*
+dist
 migrations
 node_modules
+Docker.md

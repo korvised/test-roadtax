@@ -1,13 +1,14 @@
 import { NextFunction, Request, Response } from "express"
-import { ApiError } from "../types"
+import { ApiResponse } from "./apiResponse"
+import { httpException } from "../helpers"
 
 export const errorHandler = (
-  error: Error & Partial<ApiError>,
-  req: Request,
+  error: unknown,
+  _req: Request,
   res: Response,
-  next: NextFunction
+  _next: NextFunction
 ) => {
-  const statusCode = error.statusCode ?? 500
-  const message = error.statusCode ? error.message : "Internal Server Error"
-  return res.status(statusCode).json({ message })
+  const { statusCode, message } = httpException(error)
+
+  return new ApiResponse(res, statusCode).error(message)
 }
