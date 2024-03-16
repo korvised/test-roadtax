@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from "express"
 import { AppDataSource } from "../data-source"
 import { Fee } from "../entities"
 import { ApiResponse, errorHandler } from "../middlewares"
+import { HTTPStatusCode } from "../constants"
 
 export class FeeControllers {
   static async getAllFees(req: Request, res: Response, next: NextFunction) {
@@ -10,7 +11,7 @@ export class FeeControllers {
       const fees = await feeRepository.find({
         relations: ["province"]
       })
-      return new ApiResponse(res, 200).success(fees, "Get fees successfully")
+      return new ApiResponse(res, HTTPStatusCode.Ok).success(fees, "Get fees successfully")
     } catch (err) {
       errorHandler(err, req, res, next)
     }
@@ -21,7 +22,7 @@ export class FeeControllers {
       const { plateNo, province } = req.body
 
       if (!plateNo || !province) {
-        return res.status(400).json({ message: "Missing required fields" })
+        return res.status(HTTPStatusCode.BadRequest).json({ message: "Missing required fields" })
       }
 
       const feeRepository = AppDataSource.getRepository(Fee)
@@ -33,7 +34,7 @@ export class FeeControllers {
           year: "ASC"
         }
       })
-      return new ApiResponse(res, 200).success(fees, "Get fees successfully")
+      return new ApiResponse(res, HTTPStatusCode.Ok).success(fees, "Get fees successfully")
     } catch (err) {
       errorHandler(err, req, res, next)
     }
@@ -44,7 +45,7 @@ export class FeeControllers {
       const { ref, plateNo, year, province, feeAmount, fineAmount } = req.body
 
       if (!ref || !plateNo || !year || !province || !feeAmount) {
-        return new ApiResponse(res, 400).error("Missing required fields")
+        return new ApiResponse(res, HTTPStatusCode.BadRequest).error("Missing required fields")
       }
 
       const fee = new Fee()
@@ -56,7 +57,7 @@ export class FeeControllers {
       fee.fineAmount = fineAmount || 0
       const feeRepository = AppDataSource.getRepository(Fee)
       await feeRepository.save(fee)
-      return new ApiResponse(res, 201).success(fee, "Create fee successfully")
+      return new ApiResponse(res, HTTPStatusCode.Created).success(fee, "Create fee successfully")
     } catch (error) {
       errorHandler(error, req, res, next)
     }
@@ -70,11 +71,11 @@ export class FeeControllers {
         where: { ref }
       })
 
-      if (!fee) return res.status(404).json({ message: "Fee not found" })
+      if (!fee) return res.status(HTTPStatusCode.BadRequest).json({ message: "Fee not found" })
 
       fee.isPaid = true
       await feeRepository.save(fee)
-      return new ApiResponse(res, 200).success(fee, "Update fee successfully")
+      return new ApiResponse(res, HTTPStatusCode.Ok).success(fee, "Update fee successfully")
 
     } catch (err) {
       errorHandler(err, req, res, next)
@@ -89,10 +90,10 @@ export class FeeControllers {
         where: { ref }
       })
 
-      if (!fee) return res.status(404).json({ message: "Fee not found" })
+      if (!fee) return res.status(HTTPStatusCode.BadRequest).json({ message: "Fee not found" })
 
       await feeRepository.remove(fee)
-      return new ApiResponse(res, 200).success(null, "Delete fee successfully")
+      return new ApiResponse(res, HTTPStatusCode.Ok).success(null, "Delete fee successfully")
     } catch (err) {
       errorHandler(err, req, res, next)
     }

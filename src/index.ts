@@ -1,38 +1,19 @@
-import cors from "cors"
-import express from "express"
 import dotenv from "dotenv"
-import morgan from "morgan"
-import { Request, Response } from "express"
 import { AppDataSource } from "./data-source"
-import { ApiResponse, errorHandler } from "./middlewares"
-import { feeRouter, paymentRouter, provinceRouter, userRouter } from "./routes"
+import { restApi } from "./libs"
 import "reflect-metadata"
 
 dotenv.config()
 
-const app = express()
-app.use(express.json())
-app.use(express.urlencoded({ extended: true }))
-app.use(cors())
-app.use(morgan("dev"))
-app.use(errorHandler)
+const { NODE_ENV = "dev", PORT = 3000, DB_HOST, DB_PORT } = process.env
 
-const { PORT = 3000 } = process.env
+AppDataSource.initialize().then(() => {
+  console.log("Data source initialized")
+  console.log(`** READY | Environment : ${NODE_ENV}`)
+  console.log(`** READY | PostgresSQL at : ${DB_HOST}:${DB_PORT}`)
 
-app.use("/auth", userRouter)
-app.use("/api", feeRouter)
-app.use("/api", paymentRouter)
-app.use("/api", provinceRouter)
-
-app.get("*", (_req: Request, res: Response) => {
-  return new ApiResponse(res, 404).error("Bad Request")
+  restApi.listen(PORT!)
+  console.log(`** READY | Rest API Server : ${PORT}`)
+}).catch((error) => {
+  console.error("Error initializing data source", error)
 })
-
-AppDataSource.initialize()
-  .then(async () => {
-    app.listen(PORT, () => {
-      console.log("Server is running on http://localhost:" + PORT)
-    })
-    console.log("Data Source has been initialized!")
-  })
-  .catch((error) => console.log(error))

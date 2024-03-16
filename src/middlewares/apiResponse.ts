@@ -1,10 +1,11 @@
 import { Response } from "express"
+import { HTTPStatusCode } from "../constants"
 
 export class ApiResponse {
   private readonly _response: Response
   private readonly _statusCode: number
 
-  constructor(response: Response, statusCode: number = 400) {
+  constructor(response: Response, statusCode: number = HTTPStatusCode.InternalServerError) {
     this._response = response
     this._statusCode = statusCode
   }
