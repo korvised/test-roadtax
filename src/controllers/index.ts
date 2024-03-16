@@ -1,4 +1,3 @@
-export * from "./auth.controller"
 export * from "./fee.controllers"
 export * from "./payment.controllers"
 export * from "./province.controllers"

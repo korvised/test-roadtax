@@ -1,3 +1,5 @@
+import { HTTPStatusCode } from "../constants"
+
 interface HttpException {
   statusCode: number;
   message: string;
@@ -6,13 +8,13 @@ interface HttpException {
 export const httpException = (ex: unknown): HttpException => {
   // Define default error message
   const defaultException: HttpException = {
-    statusCode: 500,
+    statusCode: HTTPStatusCode.InternalServerError,
     message: "Internal Server Error"
   }
 
   if (typeof ex === "string") {
     return {
-      statusCode: 400,
+      statusCode: defaultException.statusCode,
       message: ex
     }
   }

@@ -7,11 +7,13 @@ dotenv.config()
 
 const { NODE_ENV = "dev", PORT = 3000, DB_HOST, DB_PORT } = process.env
 
+// * Initialize the data source
 AppDataSource.initialize().then(() => {
   console.log("Data source initialized")
   console.log(`** READY | Environment : ${NODE_ENV}`)
   console.log(`** READY | PostgresSQL at : ${DB_HOST}:${DB_PORT}`)
 
+  // * Start the REST API server
   restApi.listen(PORT!)
   console.log(`** READY | Rest API Server : ${PORT}`)
 }).catch((error) => {

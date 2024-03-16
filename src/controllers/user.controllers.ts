@@ -20,13 +20,44 @@ export class UserController {
       const userRepository = AppDataSource.getRepository(User)
       await userRepository.save(user)
 
-      // userRepository.create({ Name, email, password });
       const token = encrypt.generateToken({ id: user.id })
 
       return new ApiResponse(res, HTTPStatusCode.Ok).success({ token, user })
     } catch (err) {
       errorHandler(err, req, res, next)
     }
+  }
+
+  static async signin(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { email, password } = req.body
+      if (!email || !password)
+        return new ApiResponse(res, HTTPStatusCode.BadRequest).error("Email and password are required")
+
+      const userRepository = AppDataSource.getRepository(User)
+      const user = await userRepository.findOne({ where: { email } })
+
+      if (!user) return new ApiResponse(res, HTTPStatusCode.NotFound).error("User not found")
+
+      const isPasswordValid = encrypt.comparepassword(user?.password, password)
+      if (!user || !isPasswordValid) {
+        return new ApiResponse(res, HTTPStatusCode.BadRequest).error("Invalid email or password")
+      }
+
+      const token = encrypt.generateToken({ id: user.id })
+
+      return new ApiResponse(res, HTTPStatusCode.Ok).success({ token, user })
+    } catch (err) {
+      errorHandler(err, req, res, next)
+    }
+  }
+
+  static async getProfile(req: Request, res: Response, _next: NextFunction) {
+    if (!req?.currentUser) {
+      return new ApiResponse(res, HTTPStatusCode.Unauthorized).error("Unauthorized")
+    }
+
+    return new ApiResponse(res, HTTPStatusCode.Ok).success(req.currentUser)
   }
 
   static async getUsers(req: Request, res: Response, next: NextFunction) {
@@ -36,7 +67,9 @@ export class UserController {
         return new ApiResponse(res, HTTPStatusCode.Ok).success(data, "Get users successfully")
       } else {
         const userRepository = AppDataSource.getRepository(User)
-        const users = await userRepository.find()
+        const users = await userRepository.find({
+          select: ["id", "name", "email", "role", "createdAt", "updatedAt"]
+        })
 
         cache.put("data", users, 6000)
         return new ApiResponse(res, HTTPStatusCode.Ok).success(users, "Get users successfully")
@@ -52,13 +85,14 @@ export class UserController {
       const { name, email } = req.body
       const userRepository = AppDataSource.getRepository(User)
       const user = await userRepository.findOne({
+        select: ["id", "name", "email", "role", "createdAt", "updatedAt"],
         where: { id }
       })
 
       if (!user) return new ApiResponse(res, HTTPStatusCode.NotFound).error("User not found")
 
-      user.name = name
       user.email = email
+      user.name = name
       await userRepository.save(user)
       return new ApiResponse(res, HTTPStatusCode.Ok).success(user, "Update user successfully")
     } catch (err) {

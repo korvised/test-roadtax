@@ -1,5 +1,5 @@
 import express from "express"
-import { authentification, authorization } from "../middlewares"
+import { authentication, authorization } from "../middlewares"
 import { ProvinceControllers } from "../controllers"
 import { provincePath, Role } from "../constants"
 
@@ -10,13 +10,13 @@ Router.post(provincePath.province, ProvinceControllers.createProvince)
 
 Router.put(
   provincePath.province + "/:id",
-  authentification,
+  authentication,
   authorization([Role.ADMIN]),
   ProvinceControllers.updateProvince
 )
 Router.delete(
   provincePath.province + "/:id",
-  authentification,
+  authentication,
   authorization([Role.ADMIN]),
   ProvinceControllers.deleteProvince
 )

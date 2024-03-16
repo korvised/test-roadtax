@@ -8,7 +8,7 @@ import { HTTPStatusCode } from "../constants"
 const app = express()
 
 // Apply middlewares
-app.use(express.json(), express.urlencoded({ extended: true }))
+app.use(express.json(), express.urlencoded({ extended: true, limit: "25mb" }))
 app.use(cors())
 app.use(morgan("dev"))
 app.use(errorHandler)

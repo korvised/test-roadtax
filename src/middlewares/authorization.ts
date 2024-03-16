@@ -1,18 +1,14 @@
 import { NextFunction, Request, Response } from "express"
-import { AppDataSource } from "../data-source"
-import { User } from "../entities"
+import { HTTPStatusCode } from "../constants"
+import { ApiResponse } from "./apiResponse"
 
 export const authorization = (roles: string[]) => {
   return async (req: Request, res: Response, next: NextFunction) => {
-    const userRepo = AppDataSource.getRepository(User)
-    const user = await userRepo.findOne({
-      where: { id: req?.currentUser?.id }
-    })
+    if (!req.currentUser) return new ApiResponse(res, HTTPStatusCode.Unauthorized).error("Unauthorized")
 
-    if (!user) return res.status(401).json({ message: "Unauthorized" })
-
-    if (!roles.includes(user.role))
-      return res.status(403).json({ message: "Forbidden" })
+    if (!roles.includes(req.currentUser?.role!))
+      return new ApiResponse(res, HTTPStatusCode.Forbidden)
+        .error("Permission denied", "You don't have permission to access this resource")
 
     next()
   }

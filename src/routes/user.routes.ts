@@ -1,33 +1,32 @@
 import express from "express"
-import { AuthController, UserController } from "../controllers"
-import { authentification, authorization } from "../middlewares"
+import { UserController } from "../controllers"
+import { authentication, authorization } from "../middlewares"
 import { Role, userPath } from "../constants"
 
 const Router = express.Router()
 
 Router.get(
   userPath.user,
-  authentification,
+  authentication,
   authorization([Role.ADMIN]),
   UserController.getUsers
 )
 Router.get(
   userPath.profile,
-  authentification,
-  authorization([Role.ADMIN, Role.EMPLOYEE]),
-  AuthController.getProfile
+  authentication,
+  UserController.getProfile
 )
 Router.post(userPath.signup, UserController.signup)
-Router.post(userPath.signup, AuthController.login)
+Router.post(userPath.signin, UserController.signin)
 Router.put(
   userPath.user + "/:id",
-  authentification,
+  authentication,
   authorization([Role.ADMIN, Role.EMPLOYEE]),
   UserController.updateUser
 )
 Router.delete(
   userPath.user + "/:id",
-  authentification,
+  authentication,
   authorization([Role.ADMIN]),
   UserController.deleteUser
 )
