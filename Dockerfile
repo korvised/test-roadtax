@@ -5,7 +5,7 @@ RUN yarn install
 COPY . .
 RUN yarn build
 
-FROM node:20.10.0-alpine as final
+FROM node:20.10.0-slim as final
 WORKDIR /app
 COPY --from=builder /app/.env.uat /app/.env
 COPY --from=builder /app/dist /app/dist
