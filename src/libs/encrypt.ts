@@ -6,7 +6,7 @@ dotenv.config()
 
 const { JWT_SECRET = "", JWT_EXP = "1d" } = process.env
 
-export class encrypt {
+export default class encrypt {
   static async encryptpass(password: string) {
     return bcrypt.hashSync(password, 12)
   }

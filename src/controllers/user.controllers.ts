@@ -1,10 +1,11 @@
 import cache from "memory-cache"
 import { NextFunction, Request, Response } from "express"
 import { AppDataSource } from "../data-source"
+import { encrypt } from "../libs"
 import { User } from "../entities"
-import { encrypt } from "../helpers"
 import { ApiResponse, errorHandler } from "../middlewares"
 import { HTTPStatusCode } from "../constants"
+import { UserResponse } from "../helpers"
 
 export class UserController {
   static async signup(req: Request, res: Response, next: NextFunction) {
@@ -21,8 +22,9 @@ export class UserController {
       await userRepository.save(user)
 
       const token = encrypt.generateToken({ id: user.id })
+      const authUser = new UserResponse(user)
 
-      return new ApiResponse(res, HTTPStatusCode.Ok).success({ token, user })
+      return new ApiResponse(res, HTTPStatusCode.Ok).success({ token, user: authUser })
     } catch (err) {
       errorHandler(err, req, res, next)
     }
@@ -45,8 +47,9 @@ export class UserController {
       }
 
       const token = encrypt.generateToken({ id: user.id })
+      const authUser = new UserResponse(user)
 
-      return new ApiResponse(res, HTTPStatusCode.Ok).success({ token, user })
+      return new ApiResponse(res, HTTPStatusCode.Ok).success({ token, user: authUser })
     } catch (err) {
       errorHandler(err, req, res, next)
     }
@@ -85,7 +88,6 @@ export class UserController {
       const { name, email } = req.body
       const userRepository = AppDataSource.getRepository(User)
       const user = await userRepository.findOne({
-        select: ["id", "name", "email", "role", "createdAt", "updatedAt"],
         where: { id }
       })
 
@@ -94,7 +96,8 @@ export class UserController {
       user.email = email
       user.name = name
       await userRepository.save(user)
-      return new ApiResponse(res, HTTPStatusCode.Ok).success(user, "Update user successfully")
+      const authUser = new UserResponse(user)
+      return new ApiResponse(res, HTTPStatusCode.Ok).success(authUser, "Update user successfully")
     } catch (err) {
       errorHandler(err, req, res, next)
     }

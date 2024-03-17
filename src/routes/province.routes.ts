@@ -6,8 +6,12 @@ import { provincePath, Role } from "../constants"
 const Router = express.Router()
 
 Router.get(provincePath.province, ProvinceControllers.getAllProvinces)
-Router.post(provincePath.province, ProvinceControllers.createProvince)
-
+Router.post(
+  provincePath.province,
+  authorization,
+  authorization([Role.ADMIN]),
+  ProvinceControllers.createProvince,
+  )
 Router.put(
   provincePath.province + "/:id",
   authentication,

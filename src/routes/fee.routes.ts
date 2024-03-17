@@ -5,9 +5,19 @@ import { authentication, authorization } from "../middlewares"
 
 const Router = express.Router()
 
-Router.get(feePath.fee, FeeControllers.getAllFees)
-Router.post(feePath.fee, FeeControllers.createFee)
 Router.post(feePath.inquiry, FeeControllers.getAllFeesByPlateInfo)
+Router.get(
+  feePath.fee,
+  authentication,
+  authorization([Role.ADMIN]),
+  FeeControllers.getAllFees
+)
+Router.post(
+  feePath.fee,
+  authentication,
+  authorization([Role.ADMIN]),
+  FeeControllers.createFee
+)
 Router.put(
   feePath.inquiry + "/:id",
   FeeControllers.updateFee,

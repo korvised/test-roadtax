@@ -6,6 +6,7 @@ import { HTTPStatusCode } from "../constants"
 import { AppDataSource } from "../data-source"
 import { User } from "../entities"
 import { errorHandler } from "./errorHandler"
+import { UserResponse } from "../helpers"
 
 dotenv.config()
 
@@ -42,7 +43,8 @@ export const authentication = async (
 
     if (!user) return new ApiResponse(res, HTTPStatusCode.Unauthorized).error("Unauthorized")
 
-    req.currentUser = { ...user, ...req.currentUser }
+    const authUser = new UserResponse(user)
+    req.currentUser = { ...authUser, ...req.currentUser }
 
     next()
   } catch (err) {

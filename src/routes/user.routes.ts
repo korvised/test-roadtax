@@ -5,6 +5,8 @@ import { Role, userPath } from "../constants"
 
 const Router = express.Router()
 
+Router.post(userPath.signup, UserController.signup)
+Router.post(userPath.signin, UserController.signin)
 Router.get(
   userPath.user,
   authentication,
@@ -16,8 +18,6 @@ Router.get(
   authentication,
   UserController.getProfile
 )
-Router.post(userPath.signup, UserController.signup)
-Router.post(userPath.signin, UserController.signin)
 Router.put(
   userPath.user + "/:id",
   authentication,

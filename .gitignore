@@ -1,6 +1,7 @@
 .idea
 .env
 .env*
+data
 dist
 migrations
 node_modules
