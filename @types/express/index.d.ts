@@ -1,5 +1,5 @@
-import { User } from "../../src/entities"
 import { JwtPayload } from "jsonwebtoken"
+import { User } from "../../src/entities"
 
 type CurrentUser = Partial<JwtPayload> & Partial<User>
 
