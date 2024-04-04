@@ -6,6 +6,7 @@ import { User } from "../entities"
 import { ApiResponse, errorHandler } from "../middlewares"
 import { HTTPStatusCode } from "../constants"
 import { UserResponse } from "../helpers"
+import { notEqual } from "node:assert"
 
 export class UserController {
   static async signup(req: Request, res: Response, next: NextFunction) {
@@ -71,7 +72,8 @@ export class UserController {
       } else {
         const userRepository = AppDataSource.getRepository(User)
         const users = await userRepository.find({
-          select: ["id", "name", "email", "role", "createdAt", "updatedAt"]
+          select: ["id", "name", "email", "role", "createdAt", "updatedAt"],
+          where: { role: "user" }
         })
 
         cache.put("data", users, 6000)
